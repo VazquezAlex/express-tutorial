@@ -6,6 +6,8 @@ const userRouter = require('./routes/userRoutes');
 // Create express app.
 const app = express();
 
+app.use(express.json());
+
 // Base sample of a route 👇🏻.
 // app.get('/api/v1', () => {
 //     console.log('Hey, how are you?');
