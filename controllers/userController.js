@@ -1,4 +1,8 @@
+// Third party imports.
 const uuid = require('uuid').v4;
+
+// Local imports.
+const User = require('./../models/userModel');
 
 const MOCK_USERS = [
     {
@@ -8,12 +12,15 @@ const MOCK_USERS = [
     }
 ];
 
-const getAllUsers = (req, res) => {
+const getAllUsers = async (req, res) => {
+
+    const users = await User.find();
+
     res.status(200).json({
         status: 'success',
         date: new Date(),
         data: {
-            users: MOCK_USERS
+            users
         }
     });
 }
@@ -38,7 +45,7 @@ const getUserById = (req, res) => {
     });
 }
 
-const saveNewUser = (req, res) => {
+const saveNewUser = async (req, res) => {
     const { country, name } = req.body;
 
     if (!country || !name) {
@@ -48,22 +55,24 @@ const saveNewUser = (req, res) => {
         });
     }
 
-    const newUser = {
-        id: uuid(),
-        name: name,
-        country: country
+    try {
+        const user = await User.create(req.body);
+        
+        res.status(201).json({
+            status: 'success',
+            'created-at': new Date(),
+            data: {
+                user
+            }
+        })
+    } catch (e) {
+        res.status(500).json({
+            status: 'failed',
+            message: e
+        })
     }
-
-    MOCK_USERS.push(newUser);
-    
-    res.status(201).json({
-        status: 'success',
-        'created-at': new Date(),
-        data: {
-            user: newUser
-        }
-    })
-}
+ 
+ }
 
 module.exports = {
     getAllUsers,
