@@ -25,24 +25,32 @@ const getAllUsers = async (req, res) => {
     });
 }
 
-const getUserById = (req, res) => {
+const getUserById = async (req, res) => {
     const id = req.params.id;
 
-    const user = MOCK_USERS.find(user => user.id === id);
-
-    if (!user) {
-        return res.status(404).json({
+    try {
+        const user = await User.findById(id);
+    
+        if (!user) {
+            return res.status(404).json({
+                status: 'failed',
+                message: 'We could not find a user with that id.'
+            })
+        }
+    
+        res.status(200).json({
+            status: 'success',
+            data: {
+                user: user
+            }
+        });
+    } catch (e) {
+        res.status(500).json({
             status: 'failed',
-            message: 'We could not find a user with that id.'
+            message: e
         })
     }
 
-    res.status(200).json({
-        status: 'success',
-        data: {
-            user: user
-        }
-    });
 }
 
 const saveNewUser = async (req, res) => {
